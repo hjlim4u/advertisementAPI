@@ -7,7 +7,7 @@ WORKDIR /tmp
 # CMD [ "./gradlew", "bootRun" ]
 
 # RUN sed -i 's/\r$//' ./gradlew
-RUN ./gradlew build
+# RUN ./gradlew build
 
 
 # ARG JAR_FILE="build/libs/simple-*.jar"
