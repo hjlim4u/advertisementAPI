@@ -1,13 +1,8 @@
 package com.example.assignment2.advertisement.domain;
 
-import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonSetter;
-
-
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
-
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -31,19 +26,18 @@ public class Advertisement {
     private Integer weight;
     @JsonProperty("target_country")
     private String targetCountry;
-
+    @JsonProperty("target_gender")
     private String targetGender;
     @JsonProperty("reward")
     private Integer reward;
 
-    @JsonSetter("target_gender")
-    public void targetGenderSetter(String gender) {
-        this.targetGender = gender==null ? "N" : gender;
+    public void setTargetGender(String targetGender) {
+        this.targetGender = targetGender==null ? "N": targetGender;
     }
 
-    @JsonGetter("target_gender")
-    public String targetGenderGetter() {
-        return this.targetGender == "N" ? null : this.targetGender;
+    public String getTargetGender(){
+        return this.targetGender == "N"? null : this.targetGender;
     }
+
 
 }

@@ -2,18 +2,12 @@ package com.example.assignment2.advertisement;
 
 
 import com.example.assignment2.advertisement.application.port.out.AdvertisementRepository;
-
-
 import com.example.assignment2.advertisement.domain.Advertisement;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.core.io.ClassPathResource;
-
 import org.springframework.stereotype.Component;
-
-
 import java.util.List;
 
 

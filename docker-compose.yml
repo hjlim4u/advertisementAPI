@@ -1,19 +1,32 @@
 version: "3"
 services:
-    test_database:
+    db:
         # 컨테이너 이름을 주고 싶다면 작성한다
         # container_name: test_database
-        image: mysql:5.7
+        image: mysql:8.0
         environment:
           MYSQL_DATABASE: advertisement
           MYSQL_ROOT_PASSWORD: 1234
-          MYSQL_ROOT_HOST: 'root'
+#          MYSQL_ROOT_HOST: '%'
         ports:
-          - 3306:3306        
+          - 3306:3306
 
-    test_application:
+    app:
         build: .
+        environment:
+          SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/advertisement
+          SPRING_DATASOURCE_USERNAME: root
+          SPRING_DATASOURCE_PASSWORD: 1234
         ports:
           - 8080:8080
         depends_on:
-          - test_database
+          - db
+
+    nginx:
+      image: nginx:latest
+      ports:
+        - 80:80
+      volumes:
+        - ./nginx.conf:/etc/nginx/nginx.conf
+      depends_on:
+        - app

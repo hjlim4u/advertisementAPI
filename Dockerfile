@@ -1,18 +1,8 @@
-FROM openjdk:18 AS builder
-COPY . /tmp
-WORKDIR /tmp
-# COPY ./test-application /test-application
-# WORKDIR /Assig
+FROM openjdk:17-ea-11-jdk-slim
 
-# CMD [ "./gradlew", "bootRun" ]
-
-# RUN sed -i 's/\r$//' ./gradlew
-# RUN ./gradlew build
-
-
-# ARG JAR_FILE="build/libs/simple-*.jar"
-
-FROM openjdk:18
-COPY --from=builder /tmp/build/libs/*.jar ./
-
-CMD ["java", "-jar", "spring-boot-0.0.1-SNAPSHOT.jar"]
+COPY build/libs/*.jar app.jar
+#ENV SPRING_DATASOURCE_URL=jdbc:mysql://localhost:3306/advertisement?useSSL=false&useUnicode=true&serverTimezone=Asia/Seoul
+#ENV SPRING_DATASOURCE_USERNAME=root
+#ENV SPRING_DATASOURCE_PASSWORD=1234
+EXPOSE 8080
+ENTRYPOINT ["java", "-jar", "app.jar"]

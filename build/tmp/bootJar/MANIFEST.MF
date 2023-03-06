@@ -1,0 +1,12 @@
+Manifest-Version: 1.0
+Main-Class: org.springframework.boot.loader.JarLauncher
+Start-Class: com.example.assignment2.Assignment2Application
+Spring-Boot-Version: 3.0.3-SNAPSHOT
+Spring-Boot-Classes: BOOT-INF/classes/
+Spring-Boot-Lib: BOOT-INF/lib/
+Spring-Boot-Classpath-Index: BOOT-INF/classpath.idx
+Spring-Boot-Layers-Index: BOOT-INF/layers.idx
+Build-Jdk-Spec: 17
+Implementation-Title: Assignment2
+Implementation-Version: 0.0.1-SNAPSHOT
+

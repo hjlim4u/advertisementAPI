@@ -6,16 +6,15 @@ import com.example.assignment2.advertisement.domain.Advertisement;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.stereotype.Service;
-import reactor.core.publisher.Mono;
-import reactor.core.scheduler.Schedulers;
+
 
 
 import java.util.*;
 
+import java.util.concurrent.CountDownLatch;
 import java.util.stream.Collectors;
 
 import java.util.stream.Stream;
-
 enum Recommendation {
     RANDOM, WEIGHT, PCTR, WEIGHT_PCTR_MIXED;
     private static final Recommendation[] RECOMMENDATIONS = Recommendation.values();
@@ -34,7 +33,7 @@ enum Recommendation {
 public class AdvertisementServiceImpl2 implements AdvertisementService {
     private final AdvertisementRepository advertisementRepository;
     private final ExternalAPIService externalAPIService;
-
+    private final Long ADNUM = 3L;
     Random random = new Random();
     Comparator<Advertisement> comparator = new Comparator<Advertisement>() {
         @Override
@@ -49,10 +48,12 @@ public class AdvertisementServiceImpl2 implements AdvertisementService {
     }
 
     @Override
-    public List<Advertisement> getAdvertisementsByUser(int userId, String gender, String country) {
+    public List<Advertisement> getAdvertisementsByUser(int userId, String gender, String country) throws InterruptedException {
         List<Advertisement> advertisements = advertisementRepository.findAllByTargetGenderAndTargetCountry(gender, country);
-        Stream<Long> ad_campaing_ids = advertisements.stream().map(Advertisement::getId);
+
+        Stream<Long> ad_campaign_ids = advertisements.stream().map(Advertisement::getId);
         Advertisement[] adArr = advertisements.toArray(new Advertisement[0]);
+
         List<Advertisement> results = new ArrayList<Advertisement>();
 
 
@@ -60,7 +61,7 @@ public class AdvertisementServiceImpl2 implements AdvertisementService {
             case RANDOM -> {
 
                 Set<Long> indexes = new HashSet<Long>();
-                while (indexes.size() < 3) {
+                while (indexes.size() < ADNUM) {
                     indexes.add(random.nextLong(advertisements.size()));
                 }
                 for (Long i : indexes) {
@@ -69,39 +70,51 @@ public class AdvertisementServiceImpl2 implements AdvertisementService {
                 return results;
             }
             case WEIGHT -> {
-                System.out.println(1);
-                return advertisements.stream().sorted(comparator).limit(3).collect(Collectors.toList());
+                return advertisements.stream().sorted(comparator).limit(ADNUM).collect(Collectors.toList());
             }
             case PCTR -> {
-                System.out.println(2);
-                List<Long> ids = externalAPIService.getAdCampaignIds(userId, ad_campaing_ids.collect(Collectors.toList()))
-                                .collectList().block();
+
+                List<Long> ids = externalAPIService.getAdCampaignIds(userId, ad_campaign_ids)
+                        .take(ADNUM)
+                        .map((tuple2) -> tuple2.getT1())
+                        .collectList()
+                        .block();
+
                 for (Long id : ids) {
                     results.add(adArr[id.intValue()]);
                 }
+
                 return results;
             }
             case WEIGHT_PCTR_MIXED -> {
-                System.out.println(3);
-                Mono<Long> pctrFlux = externalAPIService.getAdCampaignIds(userId, ad_campaing_ids.collect(Collectors.toList())).single()
-                        .subscribeOn(Schedulers.boundedElastic());
-                List<Advertisement> advertisementList = advertisements.stream().sorted(comparator).limit(3).collect(Collectors.toList());
-                System.out.println(advertisementList);
 
-                 Long hightspctrid = pctrFlux.block();
+                int mixed_num = 1;
+                CountDownLatch cdl = new CountDownLatch(1);
+                final Advertisement[] pctrAd = new Advertisement[1];
+                externalAPIService.getAdCampaignIds(userId, ad_campaign_ids)
+                        .take(mixed_num)
+                        .map((tuple2) -> tuple2.getT2())
+                        .doOnTerminate(()->cdl.countDown())
+                        .subscribe(i-> {
+                            pctrAd[0] = adArr[i.intValue()];
+                        });
 
-                Advertisement highpctrad = adArr[hightspctrid.intValue()];
-                for (int i = 0; i < advertisementList.size(); i++) {
-                    if (advertisementList.get(i).getId()==highpctrad.getId()) {
-                        Advertisement advertisement = advertisementList.remove(i);
-                        advertisementList.add(0, advertisement);
-                        return advertisementList;
+                List<Advertisement> advertisementList = advertisements.stream().sorted(comparator).limit(ADNUM).collect(Collectors.toList());
+                cdl.await();
+
+                results.add(pctrAd[0]);
+
+                for (Advertisement advertisement : advertisementList) {
+                    if(advertisement.getId()==pctrAd[0].getId()){
+                        continue;
                     }
+                    results.add(advertisement);
                 }
-                Advertisement advertisement = advertisementRepository.findById(hightspctrid).get();
-                advertisementList.remove(advertisementList.size()-1);
-                advertisementList.add(0, highpctrad);
-                return advertisementList;
+                if(results.size()>ADNUM){
+                    results = results.subList(0, ADNUM.intValue());
+                }
+
+                return results;
             }
 
             default ->
