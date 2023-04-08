@@ -15,7 +15,7 @@ public class Advertisement {
 
     @Id
     @JsonProperty("id")
-    private Long id;
+    private long id;
     @JsonProperty("name")
     private String name;
     @JsonProperty("image_url")
@@ -23,13 +23,13 @@ public class Advertisement {
     @JsonProperty("landing_url")
     private String landingUrl;
     @JsonProperty("weight")
-    private Integer weight;
+    private int weight;
     @JsonProperty("target_country")
     private String targetCountry;
     @JsonProperty("target_gender")
     private String targetGender;
     @JsonProperty("reward")
-    private Integer reward;
+    private int reward;
 
     public void setTargetGender(String targetGender) {
         this.targetGender = targetGender==null ? "N": targetGender;

@@ -22,7 +22,7 @@ public class ExternalAPIService {
     }
 
 
-    public Flux<Tuple2<Long, Double>> getAdCampaignIds(int userId, Stream<Long> adCampaignIds) {
+    public Flux<Long> getAdCampaignIds(long userId, Stream<Long> adCampaignIds, int ADNUM) {
         return webClient.get()
                 .uri(uriBuilder -> uriBuilder
                         .queryParam("user_id", userId)
@@ -34,7 +34,9 @@ public class ExternalAPIService {
                 .map(response -> response.getPctr())
                 .flatMapMany(Flux::fromIterable)
                 .index()
-                .sort((a,b)->Double.compare(b.getT2(),a.getT2()));
+                .sort((a,b)->Double.compare(b.getT2(),a.getT2()))
+                .take(ADNUM)
+                .map((tuple2) -> tuple2.getT1());
 
     }
 

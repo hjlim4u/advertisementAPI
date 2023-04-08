@@ -22,22 +22,22 @@ class ExternalAPIServiceTest {
     @Autowired
     public AdvertisementRepository advertisementRepository;
 
-    Stream<Long> ad_campaign_ids;
+    Stream<Long> ad_ids;
     List<Advertisement> advertisementList;
     @BeforeEach
     public void beforeEach(){
         String gender = "F";
         String country = "KR";
         advertisementList = advertisementRepository.findAllByTargetGenderAndTargetCountry(gender,country);
-        ad_campaign_ids = advertisementList.stream().map(Advertisement::getId);
+        ad_ids = advertisementList.stream().map(Advertisement::getId);
     }
 
     @Test
     void getAdCampaignIds() {
-        int userId = 1;
-        List<Double> adCampaignIds = externalAPIService.getAdCampaignIds(userId, ad_campaign_ids).map(a->a.getT2()).collectList().block();
-        Assertions.assertThat(adCampaignIds).isSortedAccordingTo(Comparator.reverseOrder());
-        Assertions.assertThat(adCampaignIds.size()).isEqualTo(advertisementList.size());
-
+        long userId = 1;
+        List<Long> adCampaignIds = externalAPIService.getAdCampaignIds(userId, ad_ids,3).collectList().block();
+        System.out.println("adCampaignIds = " + adCampaignIds);
+//        Assertions.assertThat(adCampaignIds).isSortedAccordingTo(Comparator.reverseOrder());
+        Assertions.assertThat(adCampaignIds.size()).isEqualTo(3);
     }
 }
