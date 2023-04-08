@@ -17,7 +17,7 @@ ARG ARTIFACT_NAME=app2.jar
 ARG JAR_FILE_PATH=build/libs/Assignment2-0.0.1-SNAPSHOT.jar
 
 WORKDIR $APP_HOME
-COPY --from $APP_HOME/$JAR_FILE_PATH $ARTIFACT_NAME
+COPY --from=build $APP_HOME/$JAR_FILE_PATH $ARTIFACT_NAME
 #COPY build/libs/*.jar app2.jar
 #ENV SPRING_DATASOURCE_URL=jdbc:mysql://localhost:3306/advertisement?useSSL=false&useUnicode=true&serverTimezone=Asia/Seoul
 #ENV SPRING_DATASOURCE_USERNAME=root
