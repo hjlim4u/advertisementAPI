@@ -14,6 +14,12 @@ public class Weight implements PolicyState{
     private final UserRequest userRequest;
     @Override
     public List<Advertisement> transmit() {
-        return userRequest.getAdvertisements().stream().sorted(Comparator.comparingInt(Advertisement::getWeight)).limit(userRequest.getTotal()).collect(Collectors.toList());
+        return userRequest.getAdvertisements().stream().sorted(new Comparator<Advertisement>() {
+                    @Override
+                    public int compare(Advertisement o1, Advertisement o2) {
+                        return o2.getWeight()-o1.getWeight();
+                    }
+                }).limit(userRequest.getTotal())
+                .collect(Collectors.toList());
     }
 }
