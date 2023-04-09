@@ -37,6 +37,8 @@ CTR 기반의 광고 추천 로직을 포함하여 여러 가지 광고 순서�
 | Persistence Adapter | Output port에 정의되어 있는 인터페이스를 구현하는 Adapter(JPA repository) |
 | External System Adapter | 주어진 url parameter 값에 따라 pctr값을 보내주는 외부 API(Webclient)  |
 | Input Port(External) | Webclient로 받아온 Json file을 Object file로 변환시키기 위해 필요한 객체(Response) |
+| External API service | 외부 API에서 받아온 JSON file을 비즈니스 로직에 따라 처리하는 서비스 객체  |
+
 
 비즈니스 로직과 실제 구현 사이에 인터페이스를 구현해놓음으로써 비즈니스 로직의 변경이나 기반 Adapter의 변경에 대한 영향을 최소화<br/>
 
@@ -52,7 +54,8 @@ http://localhost:8080/user?id=${user.id}&gender=${gender}&country=${country}
 ```
 <br/>
 Swagger Api docs<br/>
-API 명세 및 동작 테스트 가능<br/>
+Swagger 는 REST API를 설계, 빌드, 문서화 및 사용하는 데 도움이되는 OpenAPI 사양을 중심으로 구축 된 오픈 소스 도구 세트입니다.<br/>
+API 명세 확인 및 동작 테스트 가능<br/>
 http://localhost:8080/swagger-ui/index.html
 <br/>
 ![image](https://user-images.githubusercontent.com/76391989/222969990-c37d70bf-2ace-4540-aab4-a7a04dedbd60.png)
@@ -68,6 +71,11 @@ http://localhost:8080/swagger-ui/index.html
 cd hjlim4u-naver.com/Assignment2
 docker-compose up
 ```
+<br/>
+※ docker-compose.yml 파일에서 mysql(3306)과 nginx(80) 모두 기존에 사용했던 포트를 사용하도록 설정하였습니다. 때문에 로컬에 mysql과 nginx프로그램이 깔려있다면 해당 포트를 사용하고 있는 mysql과 nginx를 중지시키고 실행시켜야합니다.<br/>
+프로세스 중지 방법<br/>
+Windows : window키->service 입력-> mysql, nginx 서비스 중지<br/>
+Linux : sudo lsof -i:[port 번호] -> 해당 포트번호를 사용하고 있는 프로세스의 pid 조회 -> sudo kill -9 [조회한 pid]<br/>
 
 # 비즈니스 로직(광고 송출 로직 변경 방법)
 1. 기존에 생성된 비즈니스 로직 구현객체인 AdvertisementServiceImpl2.java 객체 수정 
@@ -85,10 +93,11 @@ Redis는 key,value 쌍의 데이터를 저장하는 인메모리 데이터베이
 외부 url 요청에 대한 응답을 저장하기 위한 캐시로 사용하려 했으나 동일한 user id 및 광고 id에 대한 요청임에도 pctr값이 실시간으로 변경<br/>
 캐쉬로 쓰이면 오히려 메모리 접근을 한 번 더 하는 부작용 발생 우려 <br/>
 
-#### 2. Webflux<br/>
-외부 url에 대한 요청과 DB 조회 작업을 비동기적으로 실행하기 위해 Webflux 채택<br/>
+#### 2. Webclient<br/>
+외부 url에 대한 요청과 DB 조회 작업을 비동기적으로 실행하기 위해 Webclient 채택<br/>
 Webflux는 Spring5에 새롭게 추가된 Reactive-stack의 웹 프레임워크<br/>
 클라이언트/서버에서 리액티브 어플리케이션 개발을 위한 Non-blocking reactive stream <br/>
+non blocking stream을 통하여 적은 수의 스레드만으로 효율적으로 다수의 요청을 처리 할 수 있습니다.<br/>
 ![image](https://user-images.githubusercontent.com/76391989/222969920-7ec32cec-7bff-4eef-8915-2a7daa1725ec.png)
 <br/>
 
