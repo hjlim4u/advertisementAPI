@@ -1,4 +1,4 @@
-#FROM gradle:lateset as BUILD
+#FROM gradle:7.6-jdk17-alpine as BUILD
 #ENV APP_HOME=/Assignment2
 #WORKDIR $APP_HOME
 #COPY build.gradle settings.gradle gradlew $APP_HOME
@@ -10,7 +10,7 @@
 #COPY src $APP_HOME/src
 #RUN ./gradlew clean build
 
-FROM openjdk:17
+FROM openjdk:17.0.2-jdk
 
 #ENV APP_HOME=/Assignment2
 #ARG ARTIFACT_NAME=app2.jar
