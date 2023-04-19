@@ -31,7 +31,8 @@
 - 광고는 한 번에 최대 3개까지 송출이 되며 3개의 순서는 weight 값에 의해 정해집니다.
 
 ## 개발 목표
-CTR(Click-Through Rate 광고 노출시 클릭할 확률) 기반의 광고 추천 로직을 포함하여 여러 가지 광고 순서를 정하는 정책이 구현.<br/>
+
+CTR(Click-Through Rate 광고 노출시 클릭할 확률) 기반의 광고 추천 로직을 포함하여 여러 가지 광고 순서를 정하는 정책 구현.<br/>
 다음과 같은 정책들이 있습니다.
 
 | 이름 | 설명 |
@@ -41,6 +42,25 @@ CTR(Click-Through Rate 광고 노출시 클릭할 확률) 기반의 광고 추�
 | pctr | 예측된 CTR의 내림차순으로 정렬하는 정책 |
 | weight_pctr_mixed | 예측된 CTR이 가장 높은 광고를 첫 번째에 위치하고 나머지 두 광고는 weight 기반으로 정렬하는 정책 |
 <br/>
+
+ctr의 값은 ctr-prediction-server에 요청하여 파악합니다.
+
+샘플 요청
+```
+https://predict-ctr-pmj4td4sjq-du.a.run.app/?user_id=11324&ad_campaign_ids=23,44,58
+```
+
+샘플 응답
+```json
+{
+    "pctr": [
+        0.010920662874148135,
+        0.0427661282076513,
+        0.02758501891864686
+    ]
+}
+```
+
 
 ## 개발 환경
 | 이름 | 설명 |
@@ -56,7 +76,7 @@ CTR(Click-Through Rate 광고 노출시 클릭할 확률) 기반의 광고 추�
 <br/>
 
 ![hexagonal-architecture_hu6764515d7030d45af6f7f498c79e292b_50897_956x0_resize_box_3 (1)](https://user-images.githubusercontent.com/76391989/222963583-31b4c334-1f44-4995-8cd9-bc0dd56819bf.png)
-<br/>(노란색 음영: part2에만 추가된 컴포넌트)
+<br/>(노란색 음영: 외부 API 요청 처리하는 부분)
 | 이름 | 설명 |
 | - | - |
 | Web Adapter | 사용자 요청에 따라 알맞는 광고를 매핑 시켜주는 컨트롤러(Rest api 구현) |
