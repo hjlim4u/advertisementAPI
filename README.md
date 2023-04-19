@@ -1,14 +1,14 @@
 
-# Part 2. 추천 로직 구현하기
+# 광고 추천 로직 구현하기
 
 ## 개발 목표
-CTR 기반의 광고 추천 로직을 포함하여 여러 가지 광고 순서를 정하는 정책이 구현.<br/>
+CTR(Click-Through Rate 광고 노출시 클릭할 확률) 기반의 광고 추천 로직을 포함하여 여러 가지 광고 순서를 정하는 정책이 구현.<br/>
 다음과 같은 정책들이 있습니다.
 
 | 이름 | 설명 |
 | - | - |
 | random | 랜덤으로 정렬하는 정책 |
-| weight | PART 1에서 구현한 weight 기반의 정책 |
+| weight | weight(중요도) 기반의 정책 |
 | pctr | 예측된 CTR의 내림차순으로 정렬하는 정책 |
 | weight_pctr_mixed | 예측된 CTR이 가장 높은 광고를 첫 번째에 위치하고 나머지 두 광고는 weight 기반으로 정렬하는 정책 |
 <br/>
@@ -23,7 +23,7 @@ CTR 기반의 광고 추천 로직을 포함하여 여러 가지 광고 순서�
 <br/>
 
 ## 개발 아키텍처<br/>
-개발 로직의 변경 및 확장이 용이하도록 hexagonal architecture 적용
+로직의 변경 및 확장이 용이하도록 hexagonal architecture 적용
 <br/>
 
 ![hexagonal-architecture_hu6764515d7030d45af6f7f498c79e292b_50897_956x0_resize_box_3 (1)](https://user-images.githubusercontent.com/76391989/222963583-31b4c334-1f44-4995-8cd9-bc0dd56819bf.png)
@@ -79,8 +79,26 @@ Windows : window키->service 입력-> mysql, nginx 서비스 중지<br/>
 Linux : sudo lsof -i:[port 번호] -> 해당 포트번호를 사용하고 있는 프로세스의 pid 조회 -> sudo kill -9 [조회한 pid]<br/>
 
 # 비즈니스 로직(광고 송출 로직 변경 방법)
-1. 기존에 생성된 비즈니스 로직 구현객체인 AdvertisementServiceImpl2.java 객체 수정 
-2. 기존에 구된한 객체의 @Service 어노테이션을 주석처리하고 새로운 광고 송출 로직을 구현한 객체 생성 후 @Service 어노테이션 처리<br/>
+
+## Policy 객체 다이어그램
+![Classdiagram drawio](https://user-images.githubusercontent.com/76391989/230920431-efce8500-fcde-4428-986a-36bc8603a120.png)
+| 이름 | 설명 |
+| - | - |
+| PolicyState | 광고 송출 정책의 인터페이스 |
+| ExternalAPIPolicy | PolicyState를 상속하면서 외부 API 요청 처리를 구현해놓은 추상 클래스(Template method pattern) |
+| Weight | Weight 기반 광고 송출 정책 처리 |
+| PCTR/WeightPCTRMixed | ExternalAPIPolicy에서 구현한 외부 API 처리 결과에 대한 후처리 구현 |
+| WeightPCTRMixed | 외부API 요청 처리, weight기반 처리는 Weight 객체에 위임 |
+| PolicyConfig | 생성된 송출정책들을 기반하여 유저ID 기반 송출정책 로직 결정 |
+
+확장성을 고려하여 External API Policy는 외부API에 요청하여 PCTR값이 높은 광고의 id값을 가져오는 것까지 수행하고 나머지 후처리는 템플릿 메서드 패턴을 활용하여 자식 클래스에 구현을 맡긴다.<br/>
+광고 송출을 하는데 있어 필요한 유저 정보(UserRequest)는 스프링 컨테이너의 자동주입을 통해 자동으로 유저 정보들을 활용할 수 있도록 설정하였습니다.<br/>
+광고 송출 정책을 결정하는 PolicyConfig 클래스는 PolicyState라는 인터페이스에만 의존하기 때문에 PolicyConfig 클래스 수정 없이 언제든지 PolicyState 인터페이스를 구현한 정책들의 추가 확장이 용이합니다.<br/>
+
+## 광고 송출 로직 변경
+1. PolicyState나 ExternalPolicy를 구현한 광고 송출 정책 추가
+2. PolicyConfig에 1번단계에서 추가했던 광고 송출 정책 추가
+3. 새로 추가된 송출 정책은 PolicyState 인터페이스를 구현하기 때문에 PolicyConfig Map에는 자동 주입된 상태입니다. 때문에 해당 맵 자료구조에서 해당 빈의 이름으로 조회하면 해당 송출 객체를 참조할 수 있습니다.<br/>
 
 ※ Part2 구현 프로젝트 또한 Part1 프로젝트의 로직 구현 객체만 변경하여 확장<br/>
 해당 비즈니스 로직 구현 객체는 Advertisement 도메인 객체와 Output port인 repository 객체에 의존하고 있기에 구현 기반 객체인 데이터베이스 객체 및 Web Adapter인 Controller 코드 변경할 필요가 없다.
