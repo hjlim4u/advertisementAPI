@@ -90,7 +90,7 @@ https://predict-ctr-pmj4td4sjq-du.a.run.app/?user_id=11324&ad_campaign_ids=23,44
 | External API service | 외부 API에서 받아온 JSON file을 비즈니스 로직에 따라 처리하는 서비스 객체  |
 
 
-비즈니스 로직과 실제 구현 사이에 인터페이스를 구현해놓음으로써 비즈니스 로직의 변경이나 기반 Adapter의 변경에 대한 영향을 최소화<br/>
+비즈니스 도메인과 구현 로직 사이에 인터페이스를 구현해놓음으로써 비즈니스 로직의 변경이나 기반 Adapter의 변경에 따른 영향을 최소화<br/>
 
 소프트웨어 전체적인 구조의 변경 없이 비즈니스 로직이나 기반 Adapter 기술 변경 용이
 
