@@ -1,6 +1,7 @@
 package com.example.assignment2.advertisement.application.policy;
 
 import com.example.assignment2.advertisement.domain.Advertisement;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -9,6 +10,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Component
+@Order(0)
 public class Random implements PolicyState{
     @Override
     public List<Advertisement> transmit(List<Advertisement> advertisements, long userId, int total) {

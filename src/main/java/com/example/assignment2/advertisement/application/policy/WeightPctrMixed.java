@@ -4,6 +4,7 @@ import com.example.assignment2.advertisement.application.ExternalAPIService;
 import com.example.assignment2.advertisement.domain.Advertisement;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Flux;
 
@@ -11,6 +12,7 @@ import java.util.*;
 import java.util.concurrent.CountDownLatch;
 
 @Component
+@Order(3)
 public class WeightPctrMixed extends ExternalAPIPolicy {
     private final Weight weight;
 
