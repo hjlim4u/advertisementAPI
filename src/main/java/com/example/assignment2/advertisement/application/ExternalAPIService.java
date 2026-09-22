@@ -1,43 +1,33 @@
 package com.example.assignment2.advertisement.application;
 
-
 import com.example.assignment2.advertisement.dto.Response;
-import lombok.Data;
-import org.springframework.http.MediaType;
+import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.reactive.function.client.WebClient;
-import reactor.core.publisher.Flux;
-import reactor.util.function.Tuple2;
+import org.springframework.web.client.RestTemplate;
 
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 @Service
-@Data
 public class ExternalAPIService {
-    private final WebClient webClient;
+    private final RestTemplate restTemplate;
 
-    public ExternalAPIService(WebClient.Builder webClientBuilder) {
-        this.webClient = webClientBuilder.baseUrl("https://predict-ctr-pmj4td4sjq-du.a.run.app/")
-                .build();
+    public ExternalAPIService(RestTemplateBuilder builder) {
+        this.restTemplate = builder.rootUri("https://predict-ctr-pmj4td4sjq-du.a.run.app").build();
     }
 
-
-    public Flux<Long> getAdCampaignIds(long userId, Stream<Long> adCampaignIds, int ADNUM) {
-        return webClient.get()
-                .uri(uriBuilder -> uriBuilder
-                        .queryParam("user_id", userId)
-                        .queryParam("ad_campaign_ids", String.join(",", String.join(",", adCampaignIds.map(x->x.toString()).toList())))
-                        .build())
-                .accept(MediaType.APPLICATION_JSON)
-                .retrieve()
-                .bodyToMono(Response.class)
-                .map(response -> response.getPctr())
-                .flatMapMany(Flux::fromIterable)
-                .index()
-                .sort((a,b)->Double.compare(b.getT2(),a.getT2()))
-                .take(ADNUM)
-                .map((tuple2) -> tuple2.getT1());
-
+    /** Indexes (into adCampaignIds order) of the top-ADNUM ads by predicted CTR, best first. */
+    public List<Integer> getAdCampaignIds(long userId, Stream<Long> adCampaignIds, int ADNUM) {
+        String ids = adCampaignIds.map(String::valueOf).collect(Collectors.joining(","));
+        List<Double> pctr = restTemplate
+                .getForObject("/?user_id={userId}&ad_campaign_ids={ids}", Response.class, userId, ids)
+                .getPctr();
+        return IntStream.range(0, pctr.size()).boxed()
+                .sorted(Comparator.comparing(pctr::get).reversed())
+                .limit(ADNUM)
+                .toList();
     }
-
 }
