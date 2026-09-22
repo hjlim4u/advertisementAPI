@@ -3,7 +3,6 @@ package com.example.assignment2.advertisement.application;
 import com.example.assignment2.advertisement.application.policy.PolicyState;
 import com.example.assignment2.advertisement.domain.Advertisement;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -14,7 +13,6 @@ public class AdvertisementServiceImpl2 {
     private final List<PolicyState> policies; // ordered by @Order: random, weight, pctr, weightPctrMixed
     private final int ADNUM = 3;
 
-    @Autowired
     public AdvertisementServiceImpl2(AdvertisementRepository advertisementRepository, List<PolicyState> policies){
         this.advertisementRepository = advertisementRepository;
         this.policies = policies;
