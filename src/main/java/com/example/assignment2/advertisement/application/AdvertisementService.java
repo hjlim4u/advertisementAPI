@@ -8,12 +8,12 @@ import org.springframework.stereotype.Service;
 import java.util.*;
 
 @Service
-public class AdvertisementServiceImpl2 {
+public class AdvertisementService {
     private final AdvertisementRepository advertisementRepository;
     private final List<PolicyState> policies; // ordered by @Order: random, weight, pctr, weightPctrMixed
     private final int ADNUM = 3;
 
-    public AdvertisementServiceImpl2(AdvertisementRepository advertisementRepository, List<PolicyState> policies){
+    public AdvertisementService(AdvertisementRepository advertisementRepository, List<PolicyState> policies){
         this.advertisementRepository = advertisementRepository;
         this.policies = policies;
     }

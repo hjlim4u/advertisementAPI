@@ -1,6 +1,6 @@
 package com.example.assignment2.advertisement.adapter;
 
-import com.example.assignment2.advertisement.application.AdvertisementServiceImpl2;
+import com.example.assignment2.advertisement.application.AdvertisementService;
 import com.example.assignment2.advertisement.domain.Advertisement;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -21,10 +21,10 @@ import java.util.List;
 @RequestMapping("/")
 @Tag(name = "Advertisement controller", description = "select appropriate advertisement for user")
 public class AdvertisementController {
-    private final AdvertisementServiceImpl2 advertisementService;
+    private final AdvertisementService advertisementService;
 
 
-    AdvertisementController(AdvertisementServiceImpl2 advertisementService){
+    AdvertisementController(AdvertisementService advertisementService){
         this.advertisementService = advertisementService;
     }
     @Operation(summary = "advertisement selection", description = "select appropriate advertisement according to the user info")
