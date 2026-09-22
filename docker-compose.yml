@@ -5,7 +5,6 @@ services:
         environment:
           MYSQL_DATABASE: advertisement
           MYSQL_ROOT_PASSWORD: 1234
-#          MYSQL_ROOT_HOST: '%'
         ports:
           - 3306:3306
 
