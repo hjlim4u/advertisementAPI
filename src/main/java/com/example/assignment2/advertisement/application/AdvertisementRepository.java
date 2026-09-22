@@ -1,4 +1,4 @@
-package com.example.assignment2.advertisement.application.port.out;
+package com.example.assignment2.advertisement.application;
 
 import com.example.assignment2.advertisement.domain.Advertisement;
 import org.springframework.data.jpa.repository.JpaRepository;
