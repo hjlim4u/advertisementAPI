@@ -2,7 +2,6 @@ package com.example.assignment2.advertisement.adapter;
 
 import com.example.assignment2.advertisement.application.port.in.AdvertisementService;
 import com.example.assignment2.advertisement.domain.Advertisement;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -41,7 +40,7 @@ public class AdvertisementController {
     @ResponseBody
     public List<Advertisement> userRequest(@Parameter(description = "user id") @RequestParam("id") Integer id,
                                            @Parameter(description = "user gender") @RequestParam("gender") String gender,
-                                           @Parameter(description = "user country") @RequestParam("country") String country) throws JsonProcessingException, InterruptedException {
+                                           @Parameter(description = "user country") @RequestParam("country") String country) {
         List<Advertisement>advertisementList = advertisementService.getAdvertisementsByUser(id, gender, country);
 
         return advertisementList;

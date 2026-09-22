@@ -7,5 +7,5 @@ import java.util.List;
 @Component
 public interface PolicyState {
 
-    public List<Advertisement> transmit(List<Advertisement> advertisements, long userId, int total) throws InterruptedException;
+    public List<Advertisement> transmit(List<Advertisement> advertisements, long userId, int total);
 }

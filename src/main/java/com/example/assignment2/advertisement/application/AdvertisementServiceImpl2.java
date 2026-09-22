@@ -23,7 +23,7 @@ public class AdvertisementServiceImpl2 implements AdvertisementService {
     }
 
     @Override
-    public List<Advertisement> getAdvertisementsByUser(long userId, String gender, String country) throws InterruptedException {
+    public List<Advertisement> getAdvertisementsByUser(long userId, String gender, String country) {
         List<Advertisement> advertisements = advertisementRepository.findAllByTargetGenderAndTargetCountry(gender, country);
         PolicyState policy = policies.get((int) (userId % policies.size()));
         return policy.transmit(advertisements, userId, ADNUM);

@@ -13,11 +13,11 @@ public abstract class ExternalAPIPolicy implements PolicyState {
     private final ExternalAPIService externalAPIService;
 
     @Override
-    public List<Advertisement> transmit(List<Advertisement> advertisements, long userId, int total) throws InterruptedException {
+    public List<Advertisement> transmit(List<Advertisement> advertisements, long userId, int total) {
         Stream<Long> ad_ids = advertisements.stream().map(Advertisement::getId);
         Flux<Long> externalResult = externalAPIService.getAdCampaignIds(userId, ad_ids, total);
         return postProcess(externalResult, advertisements, userId, total);
     }
 
-    abstract List<Advertisement> postProcess(Flux<Long> externalResult, List<Advertisement> advertisements, long userId, int total) throws InterruptedException;
+    abstract List<Advertisement> postProcess(Flux<Long> externalResult, List<Advertisement> advertisements, long userId, int total);
 }
